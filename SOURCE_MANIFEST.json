@@ -1,6 +1,6 @@
 {
   "date": "2026-10-12",
-  "source": "lab server source snapshot, with publication hygiene changes",
+  "source": "portable WebUI source, with ScanQA batch evaluation",
   "files": [
     {
       "path": ".gitattributes",
@@ -13,6 +13,12 @@
       "bytes": 180,
       "sha256": "dc29cb89d27466aa8eae046401a4874abb3febc7e8f81f5f0a0f41cb424f494d",
       "git_blob_sha1": "9dacfbd834fffe2b51406b8ca17123cd1e27dfc3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2793,
+      "sha256": "48116b8c0faca66b77a50bd798ebc01007b73f90f4b96471dc55ac07427427b1",
+      "git_blob_sha1": "ca7ce30f2d6e5cef35ec559488e656b2cf92584b"
     },
     {
       "path": "app/__init__.py",
@@ -33,16 +39,34 @@
       "git_blob_sha1": "3b2adb0d7a6bce24fd68ab3ef70c6b392b637df6"
     },
     {
+      "path": "app/batch.py",
+      "bytes": 20712,
+      "sha256": "17b2f6866ea4e7ea1db0f7bf8892332e46d6fe4a77dc3bb94dccf90132c1c6c8",
+      "git_blob_sha1": "1a88ffd715cf6acd9b6badd69dec28b37a803d0c"
+    },
+    {
+      "path": "app/batch_scoring.py",
+      "bytes": 1701,
+      "sha256": "235e9209cad8366a5effae8e692362dfac627cedcab6d5fa47e59080b5d09e95",
+      "git_blob_sha1": "ff2f08b35a4e9ecb14bcb7ed4eadc040bf8dbd61"
+    },
+    {
       "path": "app/config.py",
       "bytes": 5857,
       "sha256": "38436511db86f5c258c8b0daaeea6a40ac5a28b8c0a7efd2175e29a24efc0bfb",
       "git_blob_sha1": "ffa4e0d9c69e91193c99caba62d8550904cef79c"
     },
     {
+      "path": "app/corpus_worker.py",
+      "bytes": 1446,
+      "sha256": "13f4e88637c4a6e9da147c37b597c7aa40bedae2fe2853060249ddce70385cc2",
+      "git_blob_sha1": "93fdfae5fce0bfa59b1345790909ca69b56c1569"
+    },
+    {
       "path": "app/engine.py",
-      "bytes": 17970,
-      "sha256": "4f060aae767d884cbafd8e427c3988d2cdb368afb9ad196bd6b42773d41b9efe",
-      "git_blob_sha1": "97c27192062adccc76071099b4c2c4de27b081b2"
+      "bytes": 18629,
+      "sha256": "8c5304c9025d19f405e97f9dc985940ff616cd83e190db804ef89db1ee22c515",
+      "git_blob_sha1": "b226d4c3859a604dee8c7a8cef845b36e2c0bc17"
     },
     {
       "path": "app/gpu.py",
@@ -70,9 +94,9 @@
     },
     {
       "path": "app/server.py",
-      "bytes": 22705,
-      "sha256": "4eb85441e9beeed215eb8b5960c388d442f43d698a639a5f46d6a81c26da6505",
-      "git_blob_sha1": "99b61395afccaa597b5082c8480818a7cf6cb4d1"
+      "bytes": 24773,
+      "sha256": "e2126d737adf8153fc6b58398e06329678d1859564636d8d5a6eb37188985ca4",
+      "git_blob_sha1": "594d303b0b2edd0bf30f46a16eeb0820757fe2c7"
     },
     {
       "path": "app/store.py",
@@ -81,16 +105,16 @@
       "git_blob_sha1": "1bcfe94fbaf390e0c9c71bf7b037be1d658ee637"
     },
     {
+      "path": "docs/BATCH_EVALUATION.md",
+      "bytes": 5010,
+      "sha256": "88004e9ad542669b2753d2d448c393aa934ae6b7d5cd6740cfa873764666fdf3",
+      "git_blob_sha1": "1ea95b2df1a035cd8f38c098cd09617cee3b207b"
+    },
+    {
       "path": "docs/SETUP.md",
       "bytes": 3472,
       "sha256": "a17de0c95e934adf0800bac92a9254fbb720f4de7f7349d7938940bf4dff0c73",
       "git_blob_sha1": "811c29cb4a9663e72665b20d7ac05246e99ccc89"
-    },
-    {
-      "path": "README.md",
-      "bytes": 2355,
-      "sha256": "57fd00571f8d20626ca5eb203f6b36be934ebd8ffa29901adc3622c99a5c855b",
-      "git_blob_sha1": "1d314ad1cd29499761809958a3c5aae68ce615a3"
     },
     {
       "path": "requirements-webui.txt",
@@ -129,6 +153,18 @@
       "git_blob_sha1": "4eeb60bc6a56192a050da10632f7ce6992c797c6"
     },
     {
+      "path": "tools/test_batch.py",
+      "bytes": 8034,
+      "sha256": "a169fac77026ef4173c5c9f9bd5e84a512a4676fdb56ab12f9d15ad45e50b860",
+      "git_blob_sha1": "8b88f253edcfa696ee4abb2f4a4cd25b2d2ac8a9"
+    },
+    {
+      "path": "tools/validate_batch_inputs.py",
+      "bytes": 4434,
+      "sha256": "3ba0da54eafe48ef72950f4e246b3e195be71e06bc0f7227b2530c42cc979701",
+      "git_blob_sha1": "5cd4374aa1c8ee250ab2c519d7f784e3736076f6"
+    },
+    {
       "path": "tools/validate_inputs.py",
       "bytes": 3797,
       "sha256": "023446f5d214f23e59ec8b58d416a07e1d4aea60da5bfb26bec0aa9e3004700c",
@@ -154,15 +190,21 @@
     },
     {
       "path": "web/app.js",
-      "bytes": 29294,
-      "sha256": "ba62ad5e2586f7efc632ca82f12cae51da084ee1de72986a2ad81fc040066942",
-      "git_blob_sha1": "0b5c6452015389514f8f575fd9f6f38467936565"
+      "bytes": 29354,
+      "sha256": "a0c7dd610913dcf28fefb6b58998c4ad135d7998ac4a42fd087dcedcc8281cb3",
+      "git_blob_sha1": "e257fc3fe5bea0ea2cca012f4e5439ca65dd9c50"
+    },
+    {
+      "path": "web/batch.js",
+      "bytes": 8584,
+      "sha256": "36d45a188ed495f6991c86c3ccb526568ad188918418348b56aeb6bd208ab0e8",
+      "git_blob_sha1": "2f66a06b26e7df825f59f7376db896a532bf140e"
     },
     {
       "path": "web/index.html",
-      "bytes": 12210,
-      "sha256": "66e9146571340616886f34921aeaa98ded2c110bdf9ba55e19251bd9ba2edea8",
-      "git_blob_sha1": "a536cb5697f3791295f6f51253a7bbd94b4e96b7"
+      "bytes": 16300,
+      "sha256": "7aa4e4b1d92f39a44b6f679c4682d77dcab1408457fc3484611eeef1c18ec6ce",
+      "git_blob_sha1": "25ae617ae38be147d5f5287311999a655109534b"
     },
     {
       "path": "web/styles.css",
@@ -170,13 +212,5 @@
       "sha256": "799117a6cbb5ba5d12a164167695262afc41a21fc535f53b9a59225f824794d3",
       "git_blob_sha1": "5c60eae99f5bd2165263a5c7a1a6c901edcae10e"
     }
-  ],
-  "excluded": [
-    "model weights",
-    "datasets",
-    "results",
-    "logs",
-    "credentials"
-  ],
-  "external_assets_required": true
+  ]
 }

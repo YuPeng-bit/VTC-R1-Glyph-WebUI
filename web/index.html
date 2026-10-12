@@ -54,6 +54,44 @@
 
   <!-- ============ right: work area ============ -->
   <section class="panel work">
+    <details class="card" id="batch-panel">
+      <summary><h2>ScanQA 批量评测</h2></summary>
+      <p class="hint">ScanQA val（有 GT 的验证集）。每题使用自己的问题、场景和自动 uniform 帧；不会复用当前单题的手动帧、问题或描述修改。与单题推理共用模型和串行队列。关闭页面不会中止任务。</p>
+      <div class="grid4">
+        <label>评测范围<select id="batch-selection"><option value="random">随机抽样</option><option value="all">全量验证集</option></select></label>
+        <label>抽样题数<input id="batch-count" type="number" min="1" value="20"></label>
+        <label>随机种子（抽样与生成）<input id="batch-seed" type="number" min="0" max="2147483647" value="42"></label>
+        <label>场景输入<select id="batch-mode"><option value="raw">原始 RGB</option><option value="numbered">编号 RGB + 描述</option></select></label>
+        <label>描述形式<select id="batch-description"><option value="text">文字 Prompt</option><option value="vtc">VTC 渲染页</option></select></label>
+        <label class="inline"><input id="batch-relations" type="checkbox">加入自动几何关系</label>
+        <label>原生思考<select id="batch-thinking"><option value="on">开启</option><option value="off">关闭</option></select></label>
+        <label>提示词版本<select id="batch-prompt-version"><option value="optimized">新版（默认）</option><option value="original">原版</option></select></label>
+        <label>每题最大帧数（uniform）<input id="batch-frames" type="number" min="1" max="64" value="32"></label>
+        <label>每图像素上限<select id="batch-pixels"><option value="262144">262144</option><option value="524288">524288</option><option value="1048576">1048576</option></select></label>
+        <label>temperature<input id="batch-temperature" type="number" min="0" max="5" step="0.1" value="0"></label>
+        <label>top_p（留空使用模型默认）<input id="batch-top-p" type="number" min="0.01" max="1" step="0.05"></label>
+        <label>num_beams<input id="batch-beams" type="number" min="1" max="16" value="1"></label>
+        <label>max_new_tokens<input id="batch-tokens" type="number" min="1" max="8192" value="8192"></label>
+      </div>
+      <div class="field"><label>整批共用的附加 Prompt（可编辑）</label><textarea id="batch-extra-prompt" rows="3"></textarea></div>
+      <div class="field"><label>ScanQA 输出格式要求（可编辑，留空则不追加）</label><textarea id="batch-output-prompt" rows="4"></textarea></div>
+      <div class="row wrap">
+        <button class="btn small ghost" id="batch-copy-settings">复制当前单题的参数设置</button>
+        <button class="btn small ghost" id="batch-reset-prompts">恢复所选版本的 ScanQA 提示词</button>
+      </div>
+      <p class="hint" id="batch-model">使用当前服务的模型权重；任务开始后参数固定。GT 仅在生成后用于评分。temperature=0 为确定性解码，抽样使用固定种子。</p>
+      <div class="row wrap actions">
+        <button class="btn ghost" id="batch-preview">核对样本与设置（不调用 GPU）</button>
+        <button class="btn primary" id="batch-start">开始批量评测</button>
+        <button class="btn ghost" id="batch-stop" disabled>完成当前题后停止</button>
+        <button class="btn ghost" id="batch-resume" disabled>继续未完成 / 重试失败题</button>
+      </div>
+      <pre class="pre small" id="batch-progress">尚未开始。</pre>
+      <div id="batch-metrics"></div>
+      <div class="hint" id="batch-links"></div>
+      <details><summary>固定的参数与样本清单</summary><pre class="pre small" id="batch-settings"></pre></details>
+      <div class="field"><label>已保存的批量实验</label><select id="batch-history"><option value="">选择一个已保存的实验</option></select><button class="btn small ghost" id="batch-refresh">刷新批量记录</button></div>
+    </details>
     <div id="empty-hint" class="empty">
       <h2>请选择左侧的一个问题</h2>
       <p>选中后可切换输入模式、查看与修改场景画面和描述，并运行原生 VTC 推理。</p>
@@ -240,6 +278,7 @@
 </main>
 
 <div id="toast" class="toast hidden"></div>
-<script src="/static/app.js?v=20261012-prompt-versions"></script>
+<script src="/static/app.js?v=20261012-batch"></script>
+<script src="/static/batch.js?v=20261012-batch"></script>
 </body>
 </html>

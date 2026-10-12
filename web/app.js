@@ -106,6 +106,7 @@ const cotSel = $("cot-mode");
       catch(e){toast(e.message,true);}
     });
     await selectDataset(state.datasets[0].key);
+    initBatch();
     await loadHistory();
     refreshStatus();
     setInterval(refreshStatus, 8000);
@@ -556,7 +557,7 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-boot();
+window.addEventListener('DOMContentLoaded', boot);
 
 async function loadDocument(force=false) {
   if(!state.detail) return;

@@ -218,7 +218,16 @@ class NativeEngine:
                 generation = {'max_new_tokens':plan['max_new_tokens'],'do_sample':plan['temperature']>0,'num_beams':plan['num_beams']}
                 if generation['do_sample']: generation['temperature']=plan['temperature']
                 if kw.get('top_p') is not None and generation['do_sample']: generation['top_p']=float(kw['top_p'])
-                with torch.inference_mode(): output = self.model.generate(**batch, **generation)
+                # Fixed per-question RNG makes sampled decoding reproducible on
+                # batch resume without affecting subsequent interactive jobs.
+                seed = kw.get('generation_seed')
+                if seed is None:
+                    with torch.inference_mode(): output = self.model.generate(**batch, **generation)
+                else:
+                    with torch.random.fork_rng(devices=[int(str(self.device).split(':')[-1])]), torch.cuda.device(self.device):
+                        torch.random.default_generator.manual_seed(int(seed))
+                        torch.cuda.manual_seed(int(seed))
+                        with torch.inference_mode(): output = self.model.generate(**batch, **generation)
                 ids = output[0,batch['input_ids'].shape[-1]:].tolist()
                 raw = self.processor.decode(ids,skip_special_tokens=False)
                 parse_error = None; answer = None; thinking = None
@@ -237,7 +246,7 @@ class NativeEngine:
                     'answer_text':answer,'prediction':pred,'metrics_input':metric_input,'parse_error':parse_error,
                     'thinking':thinking,'answer_protocol':protocol,'latency_s':time.time()-started,
                     'output_limit_reached':len(ids)>=plan['max_new_tokens'], 'peak_gpu_allocated_GiB':torch.cuda.max_memory_allocated(self.device)/2**30,
-                    'selected_gpu':self.selected_gpu,
+                    'selected_gpu':self.selected_gpu, 'generation_seed':seed,
                     'artifact_dir':str(folder),'artifacts_url':assets.media(folder/'inputs.html')}
                 assets.write(folder/'generation.json',result)
                 (folder/'raw_output.txt').write_text(raw,encoding='utf-8')

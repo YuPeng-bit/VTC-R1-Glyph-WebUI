@@ -8,6 +8,7 @@
 - 保留原版与用户优化版提示词，默认优化版；附加说明、问题、输出格式均可修改。
 - 默认原生思考开启，输出预算 8192 token；完整保留原始输出、格式修复记录、输入和生成后的评分。
 - 支持 ScanQA、SQA3D、Scan2Cap、ScanRefer、Multi3DRefer 的逐样本浏览。
+- ScanQA 验证集支持批量评测：固定种子随机抽样或全量运行，独立配置输入与生成参数，查看进度、停止和断点继续，保存逐题记录及官方总分。
 
 ## 部署
 
@@ -18,6 +19,8 @@
 ## 结构
 
 `app/engine.py` 构建输入并调用原生模型；`app/assets.py` 加载描述、编号照片和 Glyph 页；`app/answer_parser.py` 解析完整最终答案；`app/metrics.py` 复用官方评分器；`app/server.py` 提供 API 和串行队列；`web/` 为无需构建的前端。
+
+批量入口见 [ScanQA 批量评测说明](docs/BATCH_EVALUATION.md)。`app/batch.py` 保存选择、逐题运行和恢复状态；`app/batch_scoring.py` 在独立 CPU 子进程调用官方 corpus scorer；`web/batch.js` 提供批量界面。
 
 ## 使用边界
 

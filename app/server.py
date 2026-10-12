@@ -19,6 +19,8 @@ from fastapi.staticfiles import StaticFiles
 
 from . import config, engine as engine_mod, metrics as metrics_mod, store, assets
 from .prompts import version_extra_prompt, version_output_prompt, PROMPT_VERSIONS
+from .batch import BatchManager
+from .batch_scoring import score_scanqa
 
 WEB_DIR = os.path.join(config.WEBUI_ROOT, "web")
 RUNS_LOG = os.path.join(config.RESULTS_DIR, "runs.jsonl")
@@ -55,6 +57,11 @@ class JobRegistry:
             payload = job.pop("_payload")
             self._update(job_id, status="running", stage="inference", started_at=time.time())
             try:
+                if payload.get('_batch_id'):
+                    result = BATCHES.run(payload['_batch_id'])
+                    self._update(job_id, status='done' if result['status'] in {'completed', 'completed_with_errors', 'cancelled'} else 'error',
+                                 stage=result['status'], result=result, error=result.get('error'))
+                    continue
                 if not engine_mod.ENGINE.loaded:
                     self._update(job_id, stage="loading_model")
                 self._update(job_id, stage="inference")
@@ -121,8 +128,10 @@ class JobRegistry:
             }
             self._order.append(job_id)
             if len(self._order) > 200:
-                stale = self._order.pop(0)
-                self._jobs.pop(stale, None)
+                stale = next((i for i in self._order if self._jobs[i].get('status') not in {'queued', 'running'}), None)
+                if stale:
+                    self._order.remove(stale)
+                    self._jobs.pop(stale, None)
         touch_activity()
         self._queue.put(job_id)
         return job_id
@@ -186,6 +195,10 @@ def touch_activity() -> None:
     global LAST_ACTIVITY
     with _ACTIVITY_LOCK:
         LAST_ACTIVITY = time.time()
+
+
+BATCHES = BatchManager(Path(config.RESULTS_DIR) / 'batches', store.STORE, engine_mod.ENGINE,
+                       score_scanqa, touch_activity)
 
 
 def _idle_unload_loop() -> None:
@@ -548,5 +561,50 @@ def own_asset(path: str):
     root=Path(config.WEBUI_ROOT).resolve()/'results'
     target=(Path(config.WEBUI_ROOT)/path).resolve()
     if not target.is_relative_to(root) or not target.is_file(): raise HTTPException(404,detail='Unknown result asset')
-    if target.suffix.lower() not in {'.png','.jpg','.html','.json','.txt'}: raise HTTPException(400,detail='Unsupported asset type')
+    if target.suffix.lower() not in {'.png','.jpg','.html','.json','.jsonl','.txt'}: raise HTTPException(400,detail='Unsupported asset type')
     return FileResponse(target)
+
+
+def _batch_call(fn, *args):
+    try:
+        return fn(*args)
+    except FileNotFoundError as exc:
+        raise HTTPException(404, detail=str(exc))
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(400, detail=str(exc))
+    except RuntimeError as exc:
+        raise HTTPException(409, detail=str(exc))
+
+
+@app.post('/api/batch/preview')
+def batch_preview(payload: dict = Body(...)):
+    return _batch_call(BATCHES.preview, payload)
+
+
+@app.post('/api/batch/start')
+def batch_start(payload: dict = Body(...)):
+    state = _batch_call(BATCHES.create, payload)
+    job_id = JOBS.submit({'key': 'scanqa', '_batch_id': state['batch_id']})
+    return {**state, 'job_id': job_id}
+
+
+@app.get('/api/batches')
+def batch_history(limit: int = Query(30, ge=1, le=100)):
+    return {'items': BATCHES.history(limit)}
+
+
+@app.get('/api/batches/{batch_id}')
+def batch_state(batch_id: str):
+    return _batch_call(BATCHES.get, batch_id)
+
+
+@app.post('/api/batches/{batch_id}/stop')
+def batch_stop(batch_id: str):
+    return _batch_call(BATCHES.stop, batch_id)
+
+
+@app.post('/api/batches/{batch_id}/resume')
+def batch_resume(batch_id: str):
+    _batch_call(BATCHES.resume, batch_id)
+    job_id = JOBS.submit({'key': 'scanqa', '_batch_id': batch_id})
+    return {**BATCHES.get(batch_id), 'job_id': job_id}
