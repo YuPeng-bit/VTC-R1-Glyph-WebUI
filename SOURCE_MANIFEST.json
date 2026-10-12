@@ -196,9 +196,9 @@
     },
     {
       "path": "web/batch.js",
-      "bytes": 8584,
-      "sha256": "36d45a188ed495f6991c86c3ccb526568ad188918418348b56aeb6bd208ab0e8",
-      "git_blob_sha1": "2f66a06b26e7df825f59f7376db896a532bf140e"
+      "bytes": 8706,
+      "sha256": "8b7db28410dc23473a7da665d0c5712d4c68df3ed27ef8d93a5614dde5ee6b21",
+      "git_blob_sha1": "a70abd6f1f41099182cd7940a6df6870f3c3eb51"
     },
     {
       "path": "web/index.html",

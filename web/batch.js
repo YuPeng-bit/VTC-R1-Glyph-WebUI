@@ -30,6 +30,7 @@ function initBatch() {
   $('batch-selection').addEventListener('change', () => {$('batch-count').disabled = $('batch-selection').value === 'all';});
   $('batch-reset-prompts').addEventListener('click', batchDefaults);
   $('batch-copy-settings').addEventListener('click', () => {
+    if (!state.detail) return toast('请先选择并设置一个单题，或直接修改上面的批量参数。', true);
     const mapping = {'batch-mode':'input-mode','batch-description':'description-mode','batch-pixels':'image-max-pixels',
       'batch-prompt-version':'prompt-version','batch-frames':'opt-maxframes','batch-temperature':'opt-temp',
       'batch-beams':'opt-beams','batch-tokens':'opt-maxtokens'};
