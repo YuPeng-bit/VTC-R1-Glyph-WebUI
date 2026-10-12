@@ -1,0 +1,7 @@
+# Existing tested native environment: torch 2.8.0 / transformers 4.57.1.
+# Install model dependencies separately following the upstream VTC instructions.
+fastapi==0.121.2
+uvicorn==0.38.0
+Pillow==11.3.0
+numpy==1.26.4
+scipy==1.15.3

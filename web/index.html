@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VTC-R1-Glyph WebUI</title>
+<link rel="stylesheet" href="/static/styles.css?v=vtc1" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">VTC</span>
+    <div>
+      <h1>VTC-R1-Glyph 原生模型实验台</h1>
+      <p class="sub" id="ckpt-label">checkpoint: loading…</p>
+    </div>
+  </div>
+  <div class="status" id="status-box">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">连接中…</span>
+  </div>
+  <button class="btn small ghost" id="unload-btn">释放模型显存</button>
+</header>
+
+<main class="layout">
+  <!-- ============ left: dataset + question list ============ -->
+  <aside class="panel sidebar">
+    <div class="field">
+      <label for="dataset-select">测试集 / 任务</label>
+      <select id="dataset-select"></select>
+    </div>
+    <div class="field">
+      <label for="search-input">检索（id / 场景 / 问题）</label>
+      <div class="row">
+        <input id="search-input" type="text" placeholder="例如 scene0011 或 chair" />
+        <button id="search-btn" class="btn small">检索</button>
+        <button id="search-clear" class="btn small ghost">清除</button>
+      </div>
+    </div>
+    <div class="field grow">
+      <label>问题列表 <span id="q-count" class="muted"></span></label>
+      <div id="question-list" class="question-list"></div>
+      <div class="row pager">
+        <button id="prev-page" class="btn small ghost">← 上一页</button>
+        <span id="page-info" class="muted"></span>
+        <button id="next-page" class="btn small ghost">下一页 →</button>
+      </div>
+    </div>
+    <div class="history">
+      <label>已保存的实验记录</label>
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </aside>
+
+  <!-- ============ right: work area ============ -->
+  <section class="panel work">
+    <div id="empty-hint" class="empty">
+      <h2>请选择左侧的一个问题</h2>
+      <p>选中后可切换输入模式、查看与修改场景画面和描述，并运行原生 VTC 推理。</p>
+    </div>
+
+    <div id="work-body" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <h2>问题信息</h2>
+          <span id="q-badge" class="badge"></span>
+        </div>
+        <dl class="kv">
+          <dt>索引</dt><dd id="v-index"></dd>
+          <dt>ID</dt><dd id="v-id"></dd>
+          <dt>场景</dt><dd id="v-scene"></dd>
+          <dt>类型</dt><dd id="v-type"></dd>
+        </dl>
+        <div class="field">
+          <label>GT 答案（官方评测使用的 ground truth）</label>
+          <pre id="gt-box" class="pre"></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>RGB 帧选择（深度图仅供查看）</h2>
+          <span class="muted" id="frame-meta"></span>
+        </div>
+        <div class="row wrap toolbar">
+          <button class="btn small" id="frames-reset">恢复官方默认</button>
+          <button class="btn small ghost" id="frames-all">全选</button>
+          <button class="btn small ghost" id="frames-clear">清空</button>
+          <label class="inline">等间隔取
+            <input id="frames-stride-n" type="number" min="1" value="16" class="mini" />
+            <button class="btn small ghost" id="frames-stride">应用</button>
+          </label>
+          <label class="inline">均匀取
+            <input id="frames-count-n" type="number" min="1" value="32" class="mini" />
+            <button class="btn small ghost" id="frames-count">应用</button>
+          </label>
+          <label class="inline"><input type="checkbox" id="show-depth" /> 显示深度图</label>
+          <span class="pill" id="frames-selected-info"></span>
+        </div>
+        <div id="frame-grid" class="frame-grid"></div>
+        <p class="hint">默认选中项 = 官方采样策略（<span id="hint-strategy">uniform</span>，最多 <span id="hint-maxframes">32</span> 帧，对应 <code>np.linspace(0, N-1, K)</code>）。手动改动后会直接使用你勾选的帧。</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>输入实验模式</h2></div>
+        <div class="grid4">
+          <label>场景画面<select id="input-mode"><option value="raw">原始 RGB（不输入描述）</option><option value="numbered">带物体编号的 RGB + 描述</option></select></label>
+          <label>描述输入形式<select id="description-mode"><option value="text">直接放入文字 Prompt</option><option value="vtc">渲染成 VTC 页作为图片输入</option></select></label>
+          <label>每张图的像素上限<select id="image-max-pixels"><option value="262144">262144（默认）</option><option value="524288">524288（更清晰，占用更高）</option><option value="1048576">1048576</option></select></label>
+        </div>
+        <div id="document-controls" class="hidden">
+          <p class="hint">复用已有 Qwen 物体描述；编号来自预测物体候选，跨帧保持一致。描述可能有误，可编辑。遮挡、碰撞会使部分编号未显示，不代表物体不存在。</p>
+          <button id="document-reset" class="btn small ghost">恢复原始描述和关系</button>
+          <div class="field"><label>物体描述（可编辑）</label><textarea id="description-text" rows="8"></textarea></div>
+          <label class="inline"><input type="checkbox" id="relations-enabled">加入几何方位关系</label>
+          <div class="field"><label>关系文本（可编辑；自动关系只含上下和近邻距离，不假定世界坐标的左右）</label><textarea id="relation-text" rows="5"></textarea></div>
+        </div>
+        <div id="actual-inputs" class="frame-grid"></div>
+        <p id="input-summary" class="hint">点击“仅预览模型输入”，检查模型将看到的画面、渲染页和完整 Prompt。默认同参考项目 uniform32；模型预处理改用 GLM 原生处理器。</p>
+      </div>
+      <div id="comparison-area" class="card hidden"><h2>同题对照（同一组帧）</h2><div id="comparison-results" class="cmp"></div></div>
+      <div class="card">
+        <div class="card-head"><h2>文本 Prompt（可修改）</h2></div>
+        <div class="field">
+          <label for="prompt-version">提示词版本</label>
+          <select id="prompt-version"><option value="optimized" selected>新版（你的优化，默认）</option><option value="original">原版（修改前）</option></select>
+          <button class="btn small ghost" id="prompt-version-toggle">切换到原版</button>
+          <p class="hint">切换会同时带出该版本的附加 prompt、问题措辞和输出格式。手动修改按版本保留在当前页面；恢复按钮恢复当前版本。</p>
+        </div>
+        <div class="field">
+          <label for="extra-prompt">附加 prompt</label>
+          <textarea id="extra-prompt" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label for="question-input">问题文本（图像占位由原生模板生成）</label>
+          <textarea id="question-input" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label for="output-prompt">输出格式要求（可编辑）</label>
+          <textarea id="output-prompt" rows="6"></textarea>
+          <p class="hint">这段文字会直接追加到模型 Prompt 末尾；留空则不附加。按任务和输入模式记住修改，切换题目仍保留。解析器仍按任务要求检查答案。</p>
+          <button class="btn small ghost" id="output-prompt-reset">恢复当前任务默认格式</button>
+        </div>
+        <div class="field hidden" id="box-input-field">
+          <label for="box-input">物体中心坐标 box_input（Scan2Cap 使用，官方取 3 个值）</label>
+          <input id="box-input" type="text" />
+        </div>
+        <div class="field">
+          <label>VTC 原生思考开关</label><select id="cot-mode"></select>
+          <p class="hint" id="cot-hint"></p>
+          <div class="hidden"><input type="checkbox" id="cot-force"><input id="cot-force-text"><span id="cot-warn"></span><div id="cot-custom-field"><textarea id="cot-custom"></textarea></div></div>
+        </div>
+        <div class="row wrap">
+          <button class="btn small ghost" id="prompt-reset">恢复默认提示词与格式</button>
+        </div>
+      </div>
+
+      <details class="card">
+        <summary><h2>高级参数（原生 VTC 预处理）</h2></summary>
+        <div class="grid4">
+          <label>采样策略
+            <select id="opt-strategy"></select>
+          </label>
+          <label>最大帧数
+            <input id="opt-maxframes" type="number" min="1" value="32" />
+          </label>
+          <label>图像预处理
+            <select id="opt-decode">
+              <option value="native_glm_processor">GLM 原生缩放（保留整张画面）</option>
+            </select>
+          </label>
+          <label>temperature
+            <input id="opt-temp" type="number" step="0.1" value="0" />
+          </label>
+          <label>num_beams
+            <input id="opt-beams" type="number" min="1" value="1" />
+          </label>
+          <label>max_new_tokens
+            <input id="opt-maxtokens" type="number" min="1" max="8192" value="8192" />
+          </label>
+        </div>
+        <p class="hint">当手动勾选帧时，"采样策略/最大帧数" 不再生效（输入帧以勾选为准）。</p>
+      </details>
+
+      <div class="row actions">
+        <button class="btn primary" id="run-btn">运行原生 VTC + 评测</button>
+        <button class="btn ghost" id="preview-btn">仅预览模型输入</button><button class="btn ghost" id="compare-btn">同题对照两种模式</button>
+        <span id="run-status" class="muted"></span>
+      </div>
+
+      <div id="result-area" class="hidden">
+        <div class="card">
+          <div class="card-head">
+            <h2>模型输出</h2>
+            <span class="pill" id="r-latency"></span>
+          </div>
+          <div class="cmp">
+            <div class="cmp-col">
+              <div class="cmp-head"><span>GT 答案（官方评测用）</span><span id="r-gt-badge" class="badge gt"></span></div>
+              <pre id="r-gt" class="pre gt"></pre>
+            </div>
+            <div class="cmp-col">
+              <div class="cmp-head"><span>预测结果（模型输出）</span><span id="r-match" class="badge"></span></div>
+              <pre id="r-prediction" class="pre strong"></pre>
+            </div>
+          </div>
+          <div class="field" id="thinking-field">
+            <label>思考过程（模型显式输出的推理块）</label>
+            <pre id="r-thinking" class="pre thinking"></pre>
+          </div>
+          <div class="field">
+            <label>原始输出（raw output，未经任何清理）</label>
+            <pre id="r-raw" class="pre"></pre>
+            <div id="r-files" class="hint"></div>
+          </div>
+          <div class="field">
+            <label>实际送入模型的完整 prompt</label>
+            <pre id="r-prompt" class="pre small"></pre>
+          </div>
+          <details>
+            <summary>运行细节</summary>
+            <pre id="r-extra" class="pre small"></pre>
+          </details>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>官方评测指标（本条样本）</h2></div>
+          <table class="metrics" id="metrics-table"></table>
+          <p class="hint" id="metrics-note">指标由仓库内置的官方评测代码计算（见 llava/eval/eval_*.py）。</p>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Video-3D-LLM 全量结果参考（不是本模型成绩）</h2></div>
+          <table class="metrics" id="ref-table"></table>
+          <p class="hint" id="ref-note"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/static/app.js?v=20261012-prompt-versions"></script>
+</body>
+</html>

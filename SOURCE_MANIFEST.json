@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-12",
+  "source": "lab server source snapshot, with publication hygiene changes",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 19,
+      "sha256": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
+      "git_blob_sha1": "6313b56c57848efce05faa7aa7e901ccfc2886ea"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 180,
+      "sha256": "dc29cb89d27466aa8eae046401a4874abb3febc7e8f81f5f0a0f41cb424f494d",
+      "git_blob_sha1": "9dacfbd834fffe2b51406b8ca17123cd1e27dfc3"
+    },
+    {
+      "path": "app/__init__.py",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "git_blob_sha1": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "app/answer_parser.py",
+      "bytes": 4446,
+      "sha256": "b20bbfa90f1ea2fa3efa990a0ae1eaa353ad9a2ecf142cf21ef30e676b2bf5dc",
+      "git_blob_sha1": "6a8ccddc9cb7847c9fc7b54ebd7fdd3eefdd660e"
+    },
+    {
+      "path": "app/assets.py",
+      "bytes": 9817,
+      "sha256": "754f90e13f178654413c0137cb501eb2d27024a3cfcd6923ed3eb7a991cf0b3f",
+      "git_blob_sha1": "3b2adb0d7a6bce24fd68ab3ef70c6b392b637df6"
+    },
+    {
+      "path": "app/config.py",
+      "bytes": 5857,
+      "sha256": "38436511db86f5c258c8b0daaeea6a40ac5a28b8c0a7efd2175e29a24efc0bfb",
+      "git_blob_sha1": "ffa4e0d9c69e91193c99caba62d8550904cef79c"
+    },
+    {
+      "path": "app/engine.py",
+      "bytes": 17970,
+      "sha256": "4f060aae767d884cbafd8e427c3988d2cdb368afb9ad196bd6b42773d41b9efe",
+      "git_blob_sha1": "97c27192062adccc76071099b4c2c4de27b081b2"
+    },
+    {
+      "path": "app/gpu.py",
+      "bytes": 1502,
+      "sha256": "64a8d1f411112d023d35e7f4948000fabf2bb84a022c2c0e8d3a685541854d25",
+      "git_blob_sha1": "1111a93fcddb266743862135abdf359b0202252c"
+    },
+    {
+      "path": "app/meteor_worker.py",
+      "bytes": 796,
+      "sha256": "66eda278cde72bd6ff7808c8fc99f07acda91977705484d241a2afbafbd55b54",
+      "git_blob_sha1": "1ecd03b4c2d736eb7d0435218122a20edc69d490"
+    },
+    {
+      "path": "app/metrics.py",
+      "bytes": 22117,
+      "sha256": "ea1a81ee56d79e7780e08b9bbe2c1642fba41b6aef8d914935508e4f43cac272",
+      "git_blob_sha1": "6e6d125b4baf8542383f16f3fef7cdf4beaa8fb6"
+    },
+    {
+      "path": "app/prompts.py",
+      "bytes": 3121,
+      "sha256": "fff02dbdbe3592c16f3a7bceedf8247d91c8ddae4c60838c1d290c7839fdc7d9",
+      "git_blob_sha1": "77c000a1c792191ff1eb2df7366f61a498b8500b"
+    },
+    {
+      "path": "app/server.py",
+      "bytes": 22705,
+      "sha256": "4eb85441e9beeed215eb8b5960c388d442f43d698a639a5f46d6a81c26da6505",
+      "git_blob_sha1": "99b61395afccaa597b5082c8480818a7cf6cb4d1"
+    },
+    {
+      "path": "app/store.py",
+      "bytes": 7517,
+      "sha256": "54d32f9562875647f905db1014f49bfbcb53178aa2db1ef57df1b1b158588e4e",
+      "git_blob_sha1": "1bcfe94fbaf390e0c9c71bf7b037be1d658ee637"
+    },
+    {
+      "path": "docs/SETUP.md",
+      "bytes": 3472,
+      "sha256": "a17de0c95e934adf0800bac92a9254fbb720f4de7f7349d7938940bf4dff0c73",
+      "git_blob_sha1": "811c29cb4a9663e72665b20d7ac05246e99ccc89"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2355,
+      "sha256": "57fd00571f8d20626ca5eb203f6b36be934ebd8ffa29901adc3622c99a5c855b",
+      "git_blob_sha1": "1d314ad1cd29499761809958a3c5aae68ce615a3"
+    },
+    {
+      "path": "requirements-webui.txt",
+      "bytes": 230,
+      "sha256": "6ba394eca921b3f9de4a637f94d85d87e71a0f47360343e9f22bb7eb72853b57",
+      "git_blob_sha1": "fca1191784dd3f4fb434372ff805c2c53a57613b"
+    },
+    {
+      "path": "run_webui.sh",
+      "bytes": 707,
+      "sha256": "1db2c7701e66050080ad85ed1361d76b2aeab041a5ceaf699440bc45f9ed51d7",
+      "git_blob_sha1": "a70e2e1b7bd4e543c7c5637998a35ef95e39ffc6"
+    },
+    {
+      "path": "tools/audit_answer_parser.py",
+      "bytes": 2640,
+      "sha256": "61d15b7d01ccd20bcabe4fcda95bb845df138d9f68114cd68f1fd7096ab9da49",
+      "git_blob_sha1": "7492b32e80fb30fb0b7504e05fd1f159ff939b24"
+    },
+    {
+      "path": "tools/fixtures/original_prompts_20261010.py",
+      "bytes": 1595,
+      "sha256": "da9f5b372c8bc9d9815aa5436f8a35b71a2f1cd65a59c914c46f9b6b0b4ad96e",
+      "git_blob_sha1": "028f3f38ce8e9b65380a5ca94d3aa1eb2a3d187e"
+    },
+    {
+      "path": "tools/smoke_inference.py",
+      "bytes": 1887,
+      "sha256": "f623d35ee0788b71d9c3d525395211d815007e284d1f82f6f32da4f760f99eaa",
+      "git_blob_sha1": "f83c2ce3c6d10813903780dbbb15253671d9cd9d"
+    },
+    {
+      "path": "tools/test_answer_parser.py",
+      "bytes": 4610,
+      "sha256": "250ed42df645819a8d806ec4102cf822c1aa618c2999de00dd0cee12c577201a",
+      "git_blob_sha1": "4eeb60bc6a56192a050da10632f7ce6992c797c6"
+    },
+    {
+      "path": "tools/validate_inputs.py",
+      "bytes": 3797,
+      "sha256": "023446f5d214f23e59ec8b58d416a07e1d4aea60da5bfb26bec0aa9e3004700c",
+      "git_blob_sha1": "b5c049837b79bb05eea824403cabb1c4ccb60254"
+    },
+    {
+      "path": "tools/validate_metrics.py",
+      "bytes": 1073,
+      "sha256": "6bf4a42be90805542784b85a689e51ab78bb8eb035084321d8dce3935c61e745",
+      "git_blob_sha1": "6f449ffa90c897cada32cf35bc08e0fc0b5a8931"
+    },
+    {
+      "path": "tools/validate_prompt_settings.py",
+      "bytes": 3047,
+      "sha256": "9c8b72a6cb4dabd4ea5b9101adb98422909c15499d4fa036d03e0f3ac7a537d2",
+      "git_blob_sha1": "71258e055cb89fe2976a8b93a53d21855dda82a1"
+    },
+    {
+      "path": "tools/validate_prompt_versions.py",
+      "bytes": 3486,
+      "sha256": "b2f73ffc7048c7d3681b17218646f490e6436c25ffbad26f22477cf8049fd53c",
+      "git_blob_sha1": "f654105cc8aa29e28add3b2dc71fba557e74b814"
+    },
+    {
+      "path": "web/app.js",
+      "bytes": 29294,
+      "sha256": "ba62ad5e2586f7efc632ca82f12cae51da084ee1de72986a2ad81fc040066942",
+      "git_blob_sha1": "0b5c6452015389514f8f575fd9f6f38467936565"
+    },
+    {
+      "path": "web/index.html",
+      "bytes": 12210,
+      "sha256": "66e9146571340616886f34921aeaa98ded2c110bdf9ba55e19251bd9ba2edea8",
+      "git_blob_sha1": "a536cb5697f3791295f6f51253a7bbd94b4e96b7"
+    },
+    {
+      "path": "web/styles.css",
+      "bytes": 7999,
+      "sha256": "799117a6cbb5ba5d12a164167695262afc41a21fc535f53b9a59225f824794d3",
+      "git_blob_sha1": "5c60eae99f5bd2165263a5c7a1a6c901edcae10e"
+    }
+  ],
+  "excluded": [
+    "model weights",
+    "datasets",
+    "results",
+    "logs",
+    "credentials"
+  ],
+  "external_assets_required": true
+}
